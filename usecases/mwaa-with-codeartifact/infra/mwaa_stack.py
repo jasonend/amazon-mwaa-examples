@@ -13,7 +13,7 @@ class MwaaStack(cdk.Stack):
     ) -> None:
         super().__init__(scope, id, **kwargs)
 
-        mwaa_env_name = "mwaa_codeartifact_env"
+        mwaa_env_name = f"mwaa_{self.stack_name}"
         airflow_version = os.environ.get("AIRFLOW_VERSION", "2.10.3")
 
         # Create MWAA role
@@ -129,6 +129,8 @@ class MwaaStack(cdk.Stack):
             scheduler_logs=logs_conf,
             webserver_logs=logs_conf,
             dag_processing_logs=logs_conf,
+            task_logs=logs_conf,
+            worker_logs=logs_conf
         )
 
         # Create MWAA environment
@@ -143,7 +145,7 @@ class MwaaStack(cdk.Stack):
             dag_s3_path="dags",
             requirements_s3_path="requirements.txt",
             max_workers=2,
-            webserver_access_mode="PUBLIC_ONLY",
+            webserver_access_mode="PRIVATE_ONLY",
             network_configuration=security_group_ids,
             logging_configuration=logging_configuration,
         )

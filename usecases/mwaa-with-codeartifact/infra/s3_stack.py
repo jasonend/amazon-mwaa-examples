@@ -1,5 +1,4 @@
 import os
-import secrets
 
 import aws_cdk as cdk
 from aws_cdk import aws_s3 as s3
@@ -11,15 +10,15 @@ class S3Stack(cdk.Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-        rand_int = secrets.randbelow(1000001)
         self._instance = s3.Bucket(
             self,
             "mwaa-ca-bucket",
-            bucket_name=os.environ.get("BUCKET_NAME", f"mwaa-ca-{rand_int}"),
+            bucket_name=os.environ.get("BUCKET_NAME", None),
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             removal_policy=cdk.RemovalPolicy.DESTROY,
             auto_delete_objects=True,
             versioned=True,
+            enforce_ssl=True,
         )
 
         # Deploy files to an S3 bucket (MWAA DAGs)
